@@ -23,11 +23,13 @@ using namespace std;
 
 // ports for left drive
 #define LEFT_FRONT_MOTOR_PORT 3
-#define LEFT_BACK_MOTOR_PORT  4
+#define LEFT_MID_MOTOR_PORT  4
+#define LEFT_BACK_MOTOR_PORT  5
 
 // ports for right drive
 #define RIGHT_FRONT_MOTOR_PORT 1
-#define RIGHT_BACK_MOTOR_PORT  2
+#define RIGHT_MID_MOTOR_PORT  2
+#define RIGHT_BACK_MOTOR_PORT  6
 
 // ports for lift
 #define LIFT_MOTOR_PORT 19
@@ -48,15 +50,17 @@ void umbc::Robot::opcontrol() {
 
     // initialize left drive
     pros::Motor drive_left_front_motor = pros::Motor(LEFT_FRONT_MOTOR_PORT);
-	pros::Motor drive_left_back_motor = pros::Motor(LEFT_BACK_MOTOR_PORT, MOTOR_REVERSE);
-    pros::MotorGroup drive_left = pros::MotorGroup(vector<pros::Motor>{drive_left_front_motor, drive_left_back_motor});
+	pros::Motor drive_left_mid_motor = pros::Motor(LEFT_MID_MOTOR_PORT, MOTOR_REVERSE);
+    pros::Motor drive_left_back_motor = pros::Motor(LEFT_BACK_MOTOR_PORT, MOTOR_REVERSE);
+    pros::MotorGroup drive_left = pros::MotorGroup(vector<pros::Motor>{drive_left_front_motor, drive_left_mid_motor, drive_left_back_motor});
     drive_left.set_brake_modes(E_MOTOR_BRAKE_COAST);
     drive_left.set_gearing(E_MOTOR_GEAR_GREEN);
 	
     // initialize right drive
     pros::Motor drive_right_front_motor = pros::Motor(RIGHT_FRONT_MOTOR_PORT);
-	pros::Motor drive_right_back_motor = pros::Motor(RIGHT_BACK_MOTOR_PORT, MOTOR_REVERSE);
-    pros::MotorGroup drive_right = pros::MotorGroup(vector<pros::Motor>{drive_right_front_motor, drive_right_back_motor});
+	pros::Motor drive_right_mid_motor = pros::Motor(RIGHT_MID_MOTOR_PORT, MOTOR_REVERSE);
+    pros::Motor drive_right_back_motor = pros::Motor(RIGHT_BACK_MOTOR_PORT, MOTOR_REVERSE);
+    pros::MotorGroup drive_right = pros::MotorGroup(vector<pros::Motor>{drive_right_front_motor, drive_right_mid_motor, drive_right_back_motor});
     drive_right.set_brake_modes(E_MOTOR_BRAKE_COAST);
     drive_right.set_gearing(E_MOTOR_GEAR_GREEN);
 
