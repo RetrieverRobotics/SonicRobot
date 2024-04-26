@@ -22,13 +22,13 @@ using namespace std;
 #define MOTOR_REVERSE                true
 
 // ports for left drive
-#define LEFT_FRONT_MOTOR_PORT 3
-#define LEFT_MIDDLE_MOTOR_PORT 10
+#define LEFT_FRONT_MOTOR_PORT 1
+#define LEFT_MIDDLE_MOTOR_PORT 2
 #define LEFT_BACK_MOTOR_PORT 11
 
 // ports for right drive
-#define RIGHT_FRONT_MOTOR_PORT 1
-#define RIGHT_MIDDLE_MOTOR_PORT 2
+#define RIGHT_FRONT_MOTOR_PORT 3
+#define RIGHT_MIDDLE_MOTOR_PORT 10
 #define RIGHT_BACK_MOTOR_PORT  12
 
 // ports for lift
@@ -49,12 +49,12 @@ void umbc::Robot::opcontrol() {
     umbc::Controller* controller_partner = this->controller_partner;
 
     // initialize left drive
-    pros::Motor drive_left_front_motor = pros::Motor(LEFT_FRONT_MOTOR_PORT, MOTOR_REVERSE);
-    pros::Motor drive_left_middle_motor = pros::Motor(LEFT_MIDDLE_MOTOR_PORT);
+    pros::Motor drive_left_front_motor = pros::Motor(LEFT_FRONT_MOTOR_PORT);
+    pros::Motor drive_left_middle_motor = pros::Motor(LEFT_MIDDLE_MOTOR_PORT, MOTOR_REVERSE);
 	pros::Motor drive_left_back_motor = pros::Motor(LEFT_BACK_MOTOR_PORT);
     pros::MotorGroup drive_left = pros::MotorGroup(vector<pros::Motor>{drive_left_front_motor,
         drive_left_middle_motor, drive_left_back_motor});
-    drive_left.set_brake_modes(E_MOTOR_BRAKE_COAST);
+    drive_left.set_brake_modes(E_MOTOR_BRAKE_HOLD);
     drive_left.set_gearing(E_MOTOR_GEAR_GREEN);
 	
     // initialize right drive
@@ -63,7 +63,7 @@ void umbc::Robot::opcontrol() {
 	pros::Motor drive_right_back_motor = pros::Motor(RIGHT_BACK_MOTOR_PORT);
     pros::MotorGroup drive_right = pros::MotorGroup(vector<pros::Motor>{drive_right_front_motor,
         drive_right_middle_motor, drive_right_back_motor});
-    drive_right.set_brake_modes(E_MOTOR_BRAKE_COAST);
+    drive_right.set_brake_modes(E_MOTOR_BRAKE_HOLD);
     drive_right.set_gearing(E_MOTOR_GEAR_GREEN);
 
     // initialize lift
@@ -92,7 +92,7 @@ void umbc::Robot::opcontrol() {
     while(1) {
 
         // set velocity for drive (arcade controls)
-        int32_t arcade_y = controller_master->get_analog(E_CONTROLLER_ANALOG_LEFT_Y);
+        int32_t arcade_y = -(controller_master->get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
         int32_t arcade_x = controller_master->get_analog(E_CONTROLLER_ANALOG_RIGHT_X);
 
         int32_t drive_left_velocity = (int32_t)(((double)(arcade_x - arcade_y) / (double)E_CONTROLLER_ANALOG_MAX)
@@ -131,7 +131,7 @@ void umbc::Robot::opcontrol() {
         } else if (is_wing_position_manual) {
             wing_left_motor.brake();
         }
-    
+
         // manually control right wing
         if (controller_master->get_digital(E_CONTROLLER_DIGITAL_A)) {
             wing_right_motor.move_velocity(MOTOR_BLUE_GEAR_MULTIPLIER);
