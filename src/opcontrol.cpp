@@ -102,10 +102,17 @@ void umbc::Robot::opcontrol() {
         drive_left.move_velocity(drive_left_velocity);
         drive_right.move_velocity(drive_right_velocity);
 
-        // set lift position
-        if (controller_master->get_digital(E_CONTROLLER_DIGITAL_L1)) {
-            lift.move_velocity(MOTOR_RED_GEAR_MULTIPLIER);
-        } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_L2)) {
+        // set lift position l2 left wing r2 right wing
+        if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_L2)) {
+            wing_left_motor.move_velocity(MOTOR_RED_GEAR_MULTIPLIER);
+        } else if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_L2)) {
+            lift.move_velocity(-MOTOR_RED_GEAR_MULTIPLIER);
+        } else {
+            lift_motor.brake();
+        }
+        if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_R2)) {
+            wing_right_motor.move_velocity(MOTOR_RED_GEAR_MULTIPLIER);
+        } else if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_R2)) {
             lift.move_velocity(-MOTOR_RED_GEAR_MULTIPLIER);
         } else {
             lift_motor.brake();
