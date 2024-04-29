@@ -117,27 +117,31 @@ void umbc::Robot::opcontrol() {
         static double leftWing = -1;
         static double rightWing = -1;
 
-        // manually control left wing
-        if (controller_master->get_digital(E_CONTROLLER_DIGITAL_X)) {
-            wing_left_motor.move_velocity(MOTOR_BLUE_GEAR_MULTIPLIER);
-            is_wing_position_manual = true;
-        } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_Y)) {
-            wing_left_motor.move_velocity(-MOTOR_BLUE_GEAR_MULTIPLIER);
-            is_wing_position_manual = true;
-        } else if (is_wing_position_manual) {
-            wing_left_motor.brake();
-        }
+        //  WIP WING CONTROLS
 
-        // manually control right wing
-        if (controller_master->get_digital(E_CONTROLLER_DIGITAL_A)) {
-            wing_right_motor.move_velocity(MOTOR_BLUE_GEAR_MULTIPLIER);
-            is_wing_position_manual = true;
-        } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_B)) {
-            wing_right_motor.move_velocity(-MOTOR_BLUE_GEAR_MULTIPLIER);
-            is_wing_position_manual = true;
-        } else if (is_wing_position_manual) {
-            wing_right_motor.brake();
-        }
+        //  Left Wing Movement 
+        // if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_L2)) {
+        //     if (leftWing == -1 && wing_left_motor.get_actual_velocity() > 1 || wing_left_motor.get_position() < WING_POSITION_EXPAND * 1/4){
+        //         wing_left_motor.move_velocity(MOTOR_RED_GEAR_MULTIPLIER);
+        //     }else if (leftWing == 1 && wing_left_motor.get_actual_velocity() > 1 || wing_left_motor.get_position() > WING_POSITION_EXPAND * 3/4){
+        //         wing_left_motor.move_velocity(-MOTOR_RED_GEAR_MULTIPLIER);
+        //     } else{
+        //         wing_left_motor.brake();
+        //         leftWing = -leftWing;
+        //     }
+        // }
+
+        // // right Wing Movement
+        // if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_L2)) {
+        //     if (rightWing == -1 && wing_right_motor.get_actual_velocity() > 1 || wing_right_motor.get_position() < WING_POSITION_EXPAND * 1/4){
+        //         wing_right_motor.move_velocity(MOTOR_RED_GEAR_MULTIPLIER);
+        //     }else if (rightWing == 1 && wing_right_motor.get_actual_velocity() > 1 || wing_right_motor.get_position() > WING_POSITION_EXPAND * 3/4){
+        //         wing_right_motor.move_velocity(-MOTOR_RED_GEAR_MULTIPLIER);
+        //     } else{
+        //         wing_right_motor.brake();
+        //         rightWing = -rightWing;
+        //     }
+        // }
 
         // Lift Controls 
         if (controller_master->get_digital(E_CONTROLLER_DIGITAL_R1)) {
