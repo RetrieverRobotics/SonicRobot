@@ -38,7 +38,7 @@ using namespace std;
 #define WING_LEFT_MOTOR_PORT  6
 #define WING_RIGHT_MOTOR_PORT 18
 
-#define WING_POSITION_MAX_ERROR 10
+#define WING_POSITION_MAX_ERROR 100
 #define WING_POSITION_EXPAND    2000
 
 
@@ -92,7 +92,7 @@ void umbc::Robot::opcontrol() {
     while(1) {
 
         // set velocity for drive (arcade controls)
-        int32_t arcade_y = -(controller_master->get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
+        int32_t arcade_y = controller_master->get_analog(E_CONTROLLER_ANALOG_LEFT_Y);
         int32_t arcade_x = controller_master->get_analog(E_CONTROLLER_ANALOG_RIGHT_X);
 
         int32_t drive_left_velocity = (int32_t)(((double)(arcade_x - arcade_y) / (double)E_CONTROLLER_ANALOG_MAX)
@@ -100,50 +100,83 @@ void umbc::Robot::opcontrol() {
 
         int32_t drive_right_velocity = (int32_t)(((double)(arcade_x + arcade_y) / (double)E_CONTROLLER_ANALOG_MAX)
                                         * MOTOR_GREEN_GEAR_MULTIPLIER);                                
-
-        drive_left.move_velocity(drive_left_velocity);
+        
+        drive_left.move_velocity(drive_left_velocity); 
         drive_right.move_velocity(drive_right_velocity);
 
-        // set lift position
-        if (controller_master->get_digital(E_CONTROLLER_DIGITAL_L1)) {
-            lift.move_velocity(MOTOR_RED_GEAR_MULTIPLIER);
-        } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_L2)) {
-            lift.move_velocity(-MOTOR_RED_GEAR_MULTIPLIER);
-        } else {
-            lift_motor.brake();
-        }
-
-        // set position for wings
+        // set position for intake TODO
         wing_position = wings.get_positions().front();
-        if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_R1)) {
+        if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_R1) && 0) {
             wing_position_target = (wing_position_target == WING_POSITION_EXPAND) ? 0 : WING_POSITION_EXPAND;
             wings.move_absolute(wing_position_target, MOTOR_BLUE_GEAR_MULTIPLIER);
             is_wing_position_manual = false;
         }
-        
-        // manually control left wing
-        if (controller_master->get_digital(E_CONTROLLER_DIGITAL_X)) {
-            wing_left_motor.move_velocity(MOTOR_BLUE_GEAR_MULTIPLIER);
-            is_wing_position_manual = true;
-        } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_Y)) {
-            wing_left_motor.move_velocity(-MOTOR_BLUE_GEAR_MULTIPLIER);
-            is_wing_position_manual = true;
-        } else if (is_wing_position_manual) {
-            wing_left_motor.brake();
+
+        // Wings Stuff
+
+        static double leftWing = -1;
+        static double rightWing = -1;
+
+        // // Left Wing Movement NOT WORKING
+        // if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_L2)) {
+        //     if (leftWing == -1 && wing_left_motor.get_actual_velocity() > 1 || wing_left_motor.get_position() < WING_POSITION_EXPAND * 1/4){
+        //         wing_left_motor.move_velocity(MOTOR_RED_GEAR_MULTIPLIER);
+        //     }else if (leftWing == 1 && wing_left_motor.get_actual_velocity() > 1 || wing_left_motor.get_position() > WING_POSITION_EXPAND * 3/4){
+        //         wing_left_motor.move_velocity(-MOTOR_RED_GEAR_MULTIPLIER);
+        //     } else{
+        //         wing_left_motor.brake();
+        //         leftWing = -leftWing;
+        //     }
+        // }
+
+        // // right Wing Movement
+        // if (controller_master->get_digital_new_press(E_CONTROLLER_DIGITAL_L2)) {
+        //     if (rightWing == -1 && wing_right_motor.get_actual_velocity() > 1 || wing_right_motor.get_position() < WING_POSITION_EXPAND * 1/4){
+        //         wing_right_motor.move_velocity(MOTOR_RED_GEAR_MULTIPLIER);
+        //     }else if (rightWing == 1 && wing_right_motor.get_actual_velocity() > 1 || wing_right_motor.get_position() > WING_POSITION_EXPAND * 3/4){
+        //         wing_right_motor.move_velocity(-MOTOR_RED_GEAR_MULTIPLIER);
+        //     } else{
+        //         wing_right_motor.brake();
+        //         rightWing = -rightWing;
+        //     }
+        // }
+
+        // Lift Controls 
+        if (controller_master->get_digital(E_CONTROLLER_DIGITAL_R1)) {
+            lift.move_velocity(MOTOR_RED_GEAR_MULTIPLIER); // change around later
+        } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_L1)){
+            lift.move_velocity(-MOTOR_RED_GEAR_MULTIPLIER);
+        } else {
+            lift.brake();
         }
 
-        // manually control right wing
-        if (controller_master->get_digital(E_CONTROLLER_DIGITAL_A)) {
-            wing_right_motor.move_velocity(MOTOR_BLUE_GEAR_MULTIPLIER);
-            is_wing_position_manual = true;
-        } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_B)) {
-            wing_right_motor.move_velocity(-MOTOR_BLUE_GEAR_MULTIPLIER);
-            is_wing_position_manual = true;
-        } else if (is_wing_position_manual) {
-            wing_right_motor.brake();
-        }
+        
+        
+        
+        // // manually control left wing
+        // if (controller_master->get_digital(E_CONTROLLER_DIGITAL_X)) {
+        //     wing_left_motor.move_velocity(MOTOR_BLUE_GEAR_MULTIPLIER);
+        //     is_wing_position_manual = true;
+        // } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_Y)) {
+        //     wing_left_motor.move_velocity(-MOTOR_BLUE_GEAR_MULTIPLIER);
+        //     is_wing_position_manual = true;
+        // } else if (is_wing_position_manual) {
+        //     wing_left_motor.brake();
+        // }
+    
+        // // manually control right wing
+        // if (controller_master->get_digital(E_CONTROLLER_DIGITAL_A)) {
+        //     wing_right_motor.move_velocity(MOTOR_BLUE_GEAR_MULTIPLIER);
+        //     is_wing_position_manual = true;
+        // } else if (controller_master->get_digital(E_CONTROLLER_DIGITAL_B)) {
+        //     wing_right_motor.move_velocity(-MOTOR_BLUE_GEAR_MULTIPLIER);
+        //     is_wing_position_manual = true;
+        // } else if (is_wing_position_manual) {
+        //     wing_right_motor.brake();
+        // }
 
         // required loop delay (do not edit)
         pros::Task::delay(this->opcontrol_delay_ms);
     }
+    
 }
